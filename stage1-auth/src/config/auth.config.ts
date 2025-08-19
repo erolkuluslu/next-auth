@@ -3,7 +3,8 @@
 import { NextAuthOptions } from 'next-auth';
 import Auth0Provider from 'next-auth/providers/auth0';
 import { AuthConfig, AuthCallbacks } from '@/types/auth';
-import { AUTH_ROUTES, DEFAULT_REDIRECTS, SESSION_CONFIG } from '@/utils/constants';
+import { AUTH_ROUTES, DEFAULT_REDIRECTS } from '@/utils/constants';
+import { getEnvironmentConfig } from './environment';
 
 // Interface Segregation: Separate callback concerns
 interface IJwtCallback {
@@ -69,12 +70,14 @@ export class AuthConfigFactory {
   private static signInHandler = new SignInCallbackHandler();
 
   static createAuthOptions(): NextAuthOptions {
+    const env = getEnvironmentConfig();
+    
     return {
       providers: [
         Auth0Provider({
-          clientId: process.env.AUTH0_CLIENT_ID!,
-          clientSecret: process.env.AUTH0_CLIENT_SECRET!,
-          issuer: `https://${process.env.AUTH0_DOMAIN}`,
+          clientId: env.auth.auth0ClientId,
+          clientSecret: env.auth.auth0ClientSecret,
+          issuer: `https://${env.auth.auth0Domain}`,
           authorization: {
             params: {
               scope: 'openid profile email',
@@ -84,11 +87,11 @@ export class AuthConfigFactory {
       ],
       session: {
         strategy: 'jwt',
-        maxAge: SESSION_CONFIG.MAX_AGE,
-        updateAge: SESSION_CONFIG.UPDATE_AGE,
+        maxAge: env.auth.sessionMaxAge,
+        updateAge: env.auth.sessionUpdateAge,
       },
       jwt: {
-        maxAge: SESSION_CONFIG.MAX_AGE,
+        maxAge: env.auth.sessionMaxAge,
       },
       callbacks: {
         jwt: this.jwtHandler.handleJwtCallback,
@@ -121,11 +124,12 @@ export class AuthConfigFactory {
   // Open/Closed: Extensible for different environments
   static createAuthOptionsForEnvironment(env: 'development' | 'production'): NextAuthOptions {
     const baseOptions = this.createAuthOptions();
+    const envConfig = getEnvironmentConfig();
     
     if (env === 'development') {
       return {
         ...baseOptions,
-        debug: true,
+        debug: envConfig.security.enableDebug,
         logger: {
           error: console.error,
           warn: console.warn,
@@ -134,7 +138,10 @@ export class AuthConfigFactory {
       };
     }
 
-    return baseOptions;
+    return {
+      ...baseOptions,
+      debug: envConfig.security.enableDebug,
+    };
   }
 }
 

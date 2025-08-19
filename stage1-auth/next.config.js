@@ -9,9 +9,11 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react'],
   },
 
-  // Environment variables
+  // Environment variables (12-Factor App: III. Config)
   env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
+    APP_NAME: process.env.APP_NAME,
+    APP_VERSION: process.env.APP_VERSION,
+    BUILD_NUMBER: process.env.BUILD_NUMBER,
   },
 
   // Headers for security
@@ -126,8 +128,8 @@ const nextConfig = {
     dirs: ['src'],
   },
 
-  // Output configuration for production
-  output: 'standalone',
+  // Output configuration for production (12-Factor App: V. Build, Release, Run)
+  output: process.env.BUILD_STANDALONE === 'true' ? 'standalone' : undefined,
 
   // Compression
   compress: true,

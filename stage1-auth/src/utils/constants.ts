@@ -34,10 +34,8 @@ export const DEFAULT_REDIRECTS = {
   UNAUTHORIZED: '/unauthorized',
 } as const;
 
-export const SESSION_CONFIG = {
-  MAX_AGE: 30 * 24 * 60 * 60, // 30 days
-  UPDATE_AGE: 24 * 60 * 60, // 24 hours
-} as const;
+// Session config moved to environment configuration
+// Use getEnvironmentConfig().auth.sessionMaxAge instead
 
 export const ERROR_MESSAGES = {
   AUTHENTICATION_REQUIRED: 'You must be signed in to access this resource.',
