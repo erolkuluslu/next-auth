@@ -32,16 +32,16 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, account, profile, user }) {
       // First time login
       if (account && profile) {
-        token.accessToken = account.access_token;
-        token.idToken = account.id_token;
-        token.refreshToken = account.refresh_token;
+        token.accessToken = account.access_token || undefined;
+        token.idToken = account.id_token || undefined;
+        token.refreshToken = account.refresh_token || undefined;
         
         // Add role information (default to 'user', can be enhanced with Auth0 roles)
         token.role = profile.role || 'user';
-        token.sub = profile.sub || user?.id;
-        token.email = profile.email || user?.email;
-        token.name = profile.name || user?.name;
-        token.picture = profile.picture || user?.image;
+        token.sub = profile.sub || user?.id || undefined;
+        token.email = profile.email || user?.email || undefined;
+        token.name = profile.name || user?.name || undefined;
+        token.picture = profile.picture || user?.image || undefined;
       }
       
       return token;

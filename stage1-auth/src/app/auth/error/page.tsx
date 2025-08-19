@@ -1,6 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import Link from 'next/link';
 
 const errorMessages: Record<string, { title: string; description: string; action?: string }> = {
@@ -71,11 +72,11 @@ const errorMessages: Record<string, { title: string; description: string; action
   },
 };
 
-export default function AuthErrorPage() {
+function AuthErrorContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
   
-  const errorInfo = errorMessages[error || ''] || errorMessages.default;
+  const errorInfo = errorMessages[error || 'default'] || errorMessages.default;
   const callbackUrl = searchParams.get('callbackUrl') || '/';
 
   const getErrorIcon = (error: string | null) => {
@@ -162,9 +163,9 @@ export default function AuthErrorPage() {
           <div className="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
             {getErrorIcon(error)}
           </div>
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">{errorInfo.title}</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 mb-2">{errorInfo?.title || 'Authentication Error'}</h1>
           <p className="text-gray-600">
-            {errorInfo.description}
+            {errorInfo?.description || 'An unexpected error occurred during authentication.'}
           </p>
         </div>
 
@@ -178,7 +179,7 @@ export default function AuthErrorPage() {
         )}
 
         <div className="space-y-4 mb-6">
-          {getActionButton(errorInfo.action)}
+          {getActionButton(errorInfo?.action)}
           
           <Link
             href="/"
@@ -201,5 +202,20 @@ export default function AuthErrorPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AuthErrorPage() {
+  return (
+    <Suspense fallback={
+      <div className="auth-container">
+        <div className="auth-card text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <AuthErrorContent />
+    </Suspense>
   );
 }

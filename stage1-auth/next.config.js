@@ -5,7 +5,6 @@ const nextConfig = {
   
   // Experimental features for better performance
   experimental: {
-    appDir: true,
     serverComponentsExternalPackages: ['jsonwebtoken', 'jose'],
     optimizePackageImports: ['lucide-react'],
   },
