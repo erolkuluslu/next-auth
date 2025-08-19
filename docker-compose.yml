@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # Stage 3: Shell App (Application Shell)
+  shell-app:
+    build:
+      context: ./stage3-microfrontend/shell-app
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - HOME_APP_URL=http://home-app:3001
+      - CART_APP_URL=http://cart-app:3002
+    depends_on:
+      - home-app
+      - cart-app
+    networks:
+      - microfrontend
+
+  # Stage 3: Home App (Product Listing)
+  home-app:
+    build:
+      context: ./stage3-microfrontend/home-app
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - FAKE_STORE_API_URL=https://fakestoreapi.com
+      - PORT=3001
+    networks:
+      - microfrontend
+    volumes:
+      - ./stage3-microfrontend/home-app/src:/app/src
+      - ./stage3-microfrontend/home-app/public:/app/public
+
+  # Stage 3: Cart App (Shopping Cart)
+  cart-app:
+    build:
+      context: ./stage3-microfrontend/cart-app
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+    networks:
+      - microfrontend
+    volumes:
+      - ./stage3-microfrontend/cart-app/src:/app/src
+      - ./stage3-microfrontend/cart-app/public:/app/public
+
+networks:
+  microfrontend:
+    driver: bridge
+
+volumes:
+  node_modules_shell:
+  node_modules_home:
+  node_modules_cart:
