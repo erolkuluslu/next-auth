@@ -1,0 +1,71 @@
+{
+  "name": "next-auth-interview-case",
+  "version": "1.0.0",
+  "description": "3-stage progressive frontend development interview case study",
+  "private": true,
+  "workspaces": [
+    "stage1-auth",
+    "stage2-ecommerce",
+    "stage3-microfrontend/*"
+  ],
+  "scripts": {
+    "dev": "echo 'Choose a stage: stage1, stage2, or stage3'",
+    "dev:stage1": "cd stage1-auth && npm run dev",
+    "dev:stage2": "cd stage2-ecommerce && npm run dev",
+    "dev:stage3": "docker-compose up",
+    "build": "npm run build:stage1 && npm run build:stage2 && npm run build:stage3",
+    "build:stage1": "cd stage1-auth && npm run build",
+    "build:stage2": "cd stage2-ecommerce && npm run build",
+    "build:stage3": "cd stage3-microfrontend/home-app && npm run build && cd ../cart-app && npm run build && cd ../shell-app && npm run build",
+    "test": "npm run test:stage1 && npm run test:stage2 && npm run test:stage3",
+    "test:stage1": "cd stage1-auth && npm test",
+    "test:stage2": "cd stage2-ecommerce && npm test",
+    "test:stage3": "cd stage3-microfrontend/home-app && npm test && cd ../cart-app && npm test",
+    "lint": "npm run lint:stage1 && npm run lint:stage2 && npm run lint:stage3",
+    "lint:stage1": "cd stage1-auth && npm run lint",
+    "lint:stage2": "cd stage2-ecommerce && npm run lint",
+    "lint:stage3": "cd stage3-microfrontend/home-app && npm run lint && cd ../cart-app && npm run lint",
+    "type-check": "npm run type-check:stage1 && npm run type-check:stage2 && npm run type-check:stage3",
+    "type-check:stage1": "cd stage1-auth && npm run type-check",
+    "type-check:stage2": "cd stage2-ecommerce && npm run type-check",
+    "type-check:stage3": "cd stage3-microfrontend/home-app && npm run type-check && cd ../cart-app && npm run type-check",
+    "clean": "npm run clean:stage1 && npm run clean:stage2 && npm run clean:stage3",
+    "clean:stage1": "cd stage1-auth && rm -rf .next node_modules",
+    "clean:stage2": "cd stage2-ecommerce && rm -rf .next node_modules",
+    "clean:stage3": "cd stage3-microfrontend/home-app && rm -rf .next node_modules && cd ../cart-app && rm -rf .next node_modules",
+    "install:all": "npm install && npm run install:stage1 && npm run install:stage2 && npm run install:stage3",
+    "install:stage1": "cd stage1-auth && npm install",
+    "install:stage2": "cd stage2-ecommerce && npm install",
+    "install:stage3": "cd stage3-microfrontend/home-app && npm install && cd ../cart-app && npm install && cd ../shell-app && npm install"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "keywords": [
+    "next.js",
+    "react",
+    "typescript",
+    "authentication",
+    "auth0",
+    "nextauth",
+    "ecommerce",
+    "microfrontend",
+    "interview",
+    "case-study"
+  ],
+  "author": "Frontend Developer Interview",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/erolkuluslu/next-auth.git"
+  },
+  "bugs": {
+    "url": "https://github.com/erolkuluslu/next-auth/issues"
+  },
+  "homepage": "https://github.com/erolkuluslu/next-auth#readme"
+}
