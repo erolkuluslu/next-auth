@@ -19,6 +19,72 @@ interface ISignInCallback {
   handleSignInCallback(params: any): Promise<boolean>;
 }
 
+// Enhanced Auth0 role extraction utility function
+function extractAuth0Roles(profile: any): { primaryRole: string; allRoles: string[] } {
+  // Check multiple possible sources for Auth0 roles
+  let roles: string[] = [];
+  
+  // 1. Custom claims (recommended Auth0 pattern)
+  const customRolesClaim = profile['https://yourapp.com/roles'] || profile['https://localhost:3000/roles'];
+  if (customRolesClaim) {
+    roles = Array.isArray(customRolesClaim) ? customRolesClaim : [customRolesClaim];
+  }
+  
+  // 2. App metadata (if roles stored in app_metadata)
+  else if (profile.app_metadata?.roles) {
+    roles = Array.isArray(profile.app_metadata.roles) ? profile.app_metadata.roles : [profile.app_metadata.roles];
+  }
+  
+  // 3. User metadata (if roles stored in user_metadata)
+  else if (profile.user_metadata?.roles) {
+    roles = Array.isArray(profile.user_metadata.roles) ? profile.user_metadata.roles : [profile.user_metadata.roles];
+  }
+  
+  // 4. Standard roles claim (if configured)
+  else if (profile.roles) {
+    roles = Array.isArray(profile.roles) ? profile.roles : [profile.roles];
+  }
+  
+  // 5. Single role field (original check)
+  else if (profile.role) {
+    roles = [profile.role];
+  }
+  
+  // 6. Check for Auth0 authorization extension format
+  else if (profile['https://authorization-extension.auth0.com/roles']) {
+    const authExtRoles = profile['https://authorization-extension.auth0.com/roles'];
+    roles = Array.isArray(authExtRoles) ? authExtRoles : [authExtRoles];
+  }
+  
+  // Default to 'user' if no roles found
+  if (roles.length === 0) {
+    roles = ['user'];
+  }
+  
+  // Normalize role names (convert to lowercase, handle common variations)
+  const normalizedRoles = roles.map(role => {
+    const normalized = role.toLowerCase().trim();
+    // Handle common Auth0 role name variations
+    if (normalized === 'administrator' || normalized === 'admin') return 'admin';
+    if (normalized === 'moderator' || normalized === 'mod') return 'moderator';
+    if (normalized === 'user' || normalized === 'member') return 'user';
+    if (normalized === 'viewer' || normalized === 'read-only') return 'viewer';
+    return normalized;
+  });
+  
+  // Determine primary role (highest privilege)
+  let primaryRole = 'user';
+  if (normalizedRoles.includes('admin')) primaryRole = 'admin';
+  else if (normalizedRoles.includes('moderator')) primaryRole = 'moderator';
+  else if (normalizedRoles.includes('user')) primaryRole = 'user';
+  else if (normalizedRoles.includes('viewer')) primaryRole = 'viewer';
+  
+  return {
+    primaryRole,
+    allRoles: normalizedRoles
+  };
+}
+
 // Single Responsibility: Each callback handler has one responsibility
 class JwtCallbackHandler implements IJwtCallback {
   async handleJwtCallback({ token, account, profile, user }: any): Promise<any> {
@@ -28,12 +94,22 @@ class JwtCallbackHandler implements IJwtCallback {
       token.idToken = account.id_token || undefined;
       token.refreshToken = account.refresh_token || undefined;
       
-      // Add role information (default to 'user', can be enhanced with Auth0 roles)
-      token.role = profile.role || 'user';
+      // Enhanced Auth0 role extraction from multiple sources
+      const extractedRoles = extractAuth0Roles(profile);
+      token.role = extractedRoles.primaryRole;
+      token.roles = extractedRoles.allRoles;
+      
       token.sub = profile.sub || user?.id || undefined;
       token.email = profile.email || user?.email || undefined;
       token.name = profile.name || user?.name || undefined;
       token.picture = profile.picture || user?.image || undefined;
+      
+      // Debug logging to see what Auth0 sends
+      console.log('Auth0 Profile Data:', {
+        profileKeys: Object.keys(profile),
+        extractedRoles,
+        rawProfile: profile
+      });
     }
     
     return token;
@@ -46,10 +122,12 @@ class SessionCallbackHandler implements ISessionCallback {
     session.accessToken = token.accessToken as string;
     session.idToken = token.idToken as string;
     session.role = token.role as string;
+    session.roles = token.roles as string[];
     
     if (session.user) {
       session.user.id = token.sub as string;
       session.user.role = token.role as string;
+      session.user.roles = token.roles as string[];
     }
     
     return session;
@@ -81,6 +159,8 @@ export class AuthConfigFactory {
           authorization: {
             params: {
               scope: 'openid profile email',
+              prompt: 'login', // Force login prompt every time
+              audience: `https://${env.auth.auth0Domain}/api/v2/`, // Request Management API access
             },
           },
         }),

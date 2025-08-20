@@ -2,9 +2,13 @@
 
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
+import { RoleGuard, ShowForRoles } from '@/components/auth/RoleGuard';
+import { useRBAC } from '@/hooks/useRBAC';
+import { Auth0LogoutService } from '@/utils/auth0-logout';
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
+  const { getUserRoles, getUserPermissions } = useRBAC();
 
   if (status === 'loading') {
     return (
@@ -87,7 +91,7 @@ export default function DashboardPage() {
                 <span className="text-sm font-medium text-gray-700">{session.user?.name}</span>
               </div>
               <button
-                onClick={() => signOut()}
+                onClick={() => Auth0LogoutService.performCompleteLogout()}
                 className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
               >
                 Sign Out
@@ -129,14 +133,22 @@ export default function DashboardPage() {
                     <p className="mt-1 text-sm text-gray-900 font-mono">{session.user?.id || 'N/A'}</p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Role</label>
-                    <span className={`mt-1 inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                      session.user?.role === 'admin' 
-                        ? 'bg-purple-100 text-purple-800' 
-                        : 'bg-blue-100 text-blue-800'
-                    }`}>
-                      {session.user?.role || 'user'}
-                    </span>
+                    <label className="block text-sm font-medium text-gray-700">Roles</label>
+                    <div className="mt-1 space-x-2">
+                      {getUserRoles().map((role) => (
+                        <span key={role} className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                          role === 'admin' 
+                            ? 'bg-purple-100 text-purple-800' 
+                            : role === 'moderator'
+                            ? 'bg-green-100 text-green-800'
+                            : role === 'viewer'
+                            ? 'bg-gray-100 text-gray-800'
+                            : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {role}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -160,23 +172,42 @@ export default function DashboardPage() {
                   </div>
                 </Link>
 
-                <Link
-                  href="/admin"
-                  className="bg-purple-50 border border-purple-200 rounded-lg p-6 hover:bg-purple-100 transition-colors"
+                <ShowForRoles 
+                  roles={['admin']}
+                  fallback={
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 opacity-50">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0">
+                          <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 0h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                          </svg>
+                        </div>
+                        <div className="ml-4">
+                          <h3 className="text-lg font-medium text-gray-900">Admin Panel</h3>
+                          <p className="text-sm text-gray-600">Requires admin privileges</p>
+                        </div>
+                      </div>
+                    </div>
+                  }
                 >
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
+                  <Link
+                    href="/admin"
+                    className="bg-purple-50 border border-purple-200 rounded-lg p-6 hover:bg-purple-100 transition-colors"
+                  >
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0">
+                        <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                      </div>
+                      <div className="ml-4">
+                        <h3 className="text-lg font-medium text-gray-900">Admin Panel</h3>
+                        <p className="text-sm text-gray-600">Access administrative functions</p>
+                      </div>
                     </div>
-                    <div className="ml-4">
-                      <h3 className="text-lg font-medium text-gray-900">Admin Panel</h3>
-                      <p className="text-sm text-gray-600">Access administrative functions</p>
-                    </div>
-                  </div>
-                </Link>
+                  </Link>
+                </ShowForRoles>
 
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
                   <div className="flex items-center">

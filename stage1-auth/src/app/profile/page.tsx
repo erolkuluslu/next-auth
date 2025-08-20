@@ -3,6 +3,7 @@
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { useState } from 'react';
+import { Auth0LogoutService } from '@/utils/auth0-logout';
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -117,7 +118,7 @@ export default function ProfilePage() {
                 <span className="text-sm font-medium text-gray-700">{session.user?.name}</span>
               </div>
               <button
-                onClick={() => signOut()}
+                onClick={() => Auth0LogoutService.performCompleteLogout()}
                 className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
               >
                 Sign Out

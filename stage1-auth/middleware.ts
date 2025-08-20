@@ -2,14 +2,14 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { MiddlewareServiceFactory } from '@/services/middleware.service';
-import { UserRole } from '@/types/auth';
+import { UserRole } from '@/types/rbac';
 
-// Configuration following Single Responsibility and Open/Closed principles
+// Enhanced RBAC Configuration following Single Responsibility and Open/Closed principles
 const PROTECTED_ROUTES: Record<string, UserRole[]> = {
-  '/dashboard': ['user', 'admin'],
+  '/dashboard': ['viewer', 'user', 'moderator', 'admin'],
   '/admin': ['admin'],
-  '/profile': ['user', 'admin'],
-  '/settings': ['user', 'admin'],
+  '/profile': ['user', 'moderator', 'admin'],
+  '/settings': ['moderator', 'admin'],
 };
 
 const PUBLIC_ROUTES = ['/auth/signin', '/auth/signup', '/auth/error'];

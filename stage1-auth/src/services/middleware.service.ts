@@ -1,7 +1,8 @@
 // Middleware service following SOLID principles
 
 import { NextRequest, NextResponse } from 'next/server';
-import { UserRole, RouteProtection } from '@/types/auth';
+import { UserRole } from '@/types/rbac';
+import { rbacService } from '@/services/rbac.service';
 
 // Interface Segregation: Separate concerns for different middleware functions
 export interface IRouteProtectionService {
@@ -122,7 +123,13 @@ export class TokenValidationService implements ITokenValidationService {
   }
 
   extractUserRole(token: any): UserRole {
-    return (token?.role as UserRole) || 'user';
+    // Extract roles array or single role from token
+    const roles = token?.roles || [token?.role] || ['user'];
+    // Return the highest privilege role for middleware compatibility
+    if (roles.includes('admin')) return 'admin';
+    if (roles.includes('moderator')) return 'moderator';
+    if (roles.includes('user')) return 'user';
+    return 'viewer';
   }
 
   extractUserId(token: any): string {
@@ -194,7 +201,9 @@ export class MiddlewareOrchestrator {
     const requiredRoles = this.routeProtection.getRequiredRoles(pathname);
     if (requiredRoles) {
       const userRole = this.tokenValidation.extractUserRole(token);
-      if (!requiredRoles.includes(userRole)) {
+      // Check if user has any of the required roles or higher privilege through inheritance
+      const hasAccess = requiredRoles.some(role => rbacService.roleInheritsFrom(userRole, role) || userRole === role);
+      if (!hasAccess) {
         return this.routeProtection.createUnauthorizedResponse(origin);
       }
     }

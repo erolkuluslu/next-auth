@@ -18,6 +18,7 @@ export interface EnvironmentConfig {
     appName: string;
     version: string;
     buildNumber?: string;
+    baseUrl: string;
   };
   security: {
     corsOrigins: string[];
@@ -45,6 +46,11 @@ class EnvironmentValidator {
   static validate(): void {
     // Skip validation during build process
     if (process.env.NEXT_PHASE === 'phase-production-build') {
+      return;
+    }
+
+    // Skip validation on client side (environment variables are not available)
+    if (typeof window !== 'undefined') {
       return;
     }
 
@@ -94,14 +100,15 @@ export class EnvironmentConfigFactory {
     const isProduction = nodeEnv === 'production';
     const isDevelopment = nodeEnv === 'development';
     const isBuild = process.env.NEXT_PHASE === 'phase-production-build';
+    const isClientSide = typeof window !== 'undefined';
 
     return {
       auth: {
-        auth0ClientId: process.env.AUTH0_CLIENT_ID || (isBuild ? 'build-placeholder' : ''),
-        auth0ClientSecret: process.env.AUTH0_CLIENT_SECRET || (isBuild ? 'build-placeholder' : ''),
-        auth0Domain: process.env.AUTH0_DOMAIN || (isBuild ? 'build-placeholder' : ''),
-        nextAuthUrl: process.env.NEXTAUTH_URL || (isBuild ? 'http://localhost:3000' : ''),
-        nextAuthSecret: process.env.NEXTAUTH_SECRET || (isBuild ? 'build-placeholder-min-32-characters-long' : ''),
+        auth0ClientId: process.env.AUTH0_CLIENT_ID || (isClientSide ? 'client-side-placeholder' : (isBuild ? 'build-placeholder' : '')),
+        auth0ClientSecret: process.env.AUTH0_CLIENT_SECRET || (isClientSide ? 'client-side-placeholder' : (isBuild ? 'build-placeholder' : '')),
+        auth0Domain: process.env.AUTH0_DOMAIN || (isClientSide ? 'client-side-placeholder' : (isBuild ? 'build-placeholder' : '')),
+        nextAuthUrl: process.env.NEXTAUTH_URL || (isClientSide ? (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000') : (isBuild ? 'http://localhost:3000' : '')),
+        nextAuthSecret: process.env.NEXTAUTH_SECRET || (isClientSide ? 'client-side-placeholder-not-available' : (isBuild ? 'build-placeholder-min-32-characters-long' : '')),
         jwtSecret: process.env.JWT_SECRET,
         sessionMaxAge: parseInt(process.env.SESSION_MAX_AGE || '2592000'), // 30 days
         sessionUpdateAge: parseInt(process.env.SESSION_UPDATE_AGE || '86400'), // 24 hours
@@ -112,6 +119,7 @@ export class EnvironmentConfigFactory {
         appName: process.env.APP_NAME || 'Next.js Auth App',
         version: process.env.APP_VERSION || '1.0.0',
         buildNumber: process.env.BUILD_NUMBER,
+        baseUrl: process.env.NEXTAUTH_URL || (isClientSide ? (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000') : 'http://localhost:3000'),
       },
       security: {
         corsOrigins: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000'],

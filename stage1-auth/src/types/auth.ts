@@ -46,8 +46,8 @@ export interface AuthConfig {
   };
 }
 
-// Role-based access control types
-export type UserRole = 'user' | 'admin';
+// Import from shared RBAC types to maintain consistency
+import { UserRole } from './rbac';
 
 export interface RouteProtection {
   path: string;
@@ -58,3 +58,6 @@ export interface RouteProtection {
 export interface ProtectedRouteConfig {
   [key: string]: UserRole[];
 }
+
+// Re-export for convenience
+export type { UserRole };

@@ -1,7 +1,7 @@
 import { chromium, FullConfig } from '@playwright/test';
 
 async function globalSetup(config: FullConfig) {
-  const { baseURL } = config.projects[0].use;
+  const { baseURL } = config.projects[0]?.use || {};
   
   // Launch browser for setup
   const browser = await chromium.launch();

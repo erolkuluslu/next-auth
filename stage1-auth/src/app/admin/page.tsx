@@ -3,6 +3,8 @@
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { useState } from 'react';
+import { RoleManagement } from '@/components/admin/RoleManagement';
+import { Auth0LogoutService } from '@/utils/auth0-logout';
 
 export default function AdminPage() {
   const { data: session, status } = useSession();
@@ -134,7 +136,7 @@ export default function AdminPage() {
                 <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">ADMIN</span>
               </div>
               <button
-                onClick={() => signOut()}
+                onClick={() => Auth0LogoutService.performCompleteLogout()}
                 className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
               >
                 Sign Out
@@ -205,7 +207,7 @@ export default function AdminPage() {
                 <nav className="-mb-px flex">
                   <button
                     onClick={() => setActiveTab('users')}
-                    className={`w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm ${
+                    className={`w-1/5 py-4 px-1 text-center border-b-2 font-medium text-sm ${
                       activeTab === 'users'
                         ? 'border-purple-500 text-purple-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -215,7 +217,7 @@ export default function AdminPage() {
                   </button>
                   <button
                     onClick={() => setActiveTab('security')}
-                    className={`w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm ${
+                    className={`w-1/5 py-4 px-1 text-center border-b-2 font-medium text-sm ${
                       activeTab === 'security'
                         ? 'border-purple-500 text-purple-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -225,7 +227,7 @@ export default function AdminPage() {
                   </button>
                   <button
                     onClick={() => setActiveTab('system')}
-                    className={`w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm ${
+                    className={`w-1/5 py-4 px-1 text-center border-b-2 font-medium text-sm ${
                       activeTab === 'system'
                         ? 'border-purple-500 text-purple-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -234,8 +236,18 @@ export default function AdminPage() {
                     System
                   </button>
                   <button
+                    onClick={() => setActiveTab('roles')}
+                    className={`w-1/5 py-4 px-1 text-center border-b-2 font-medium text-sm ${
+                      activeTab === 'roles'
+                        ? 'border-purple-500 text-purple-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    Roles & RBAC
+                  </button>
+                  <button
                     onClick={() => setActiveTab('logs')}
-                    className={`w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm ${
+                    className={`w-1/5 py-4 px-1 text-center border-b-2 font-medium text-sm ${
                       activeTab === 'logs'
                         ? 'border-purple-500 text-purple-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -376,6 +388,12 @@ export default function AdminPage() {
                         </div>
                       </div>
                     </div>
+                  </div>
+                )}
+
+                {activeTab === 'roles' && (
+                  <div>
+                    <RoleManagement />
                   </div>
                 )}
 

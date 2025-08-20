@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Providers } from './providers';
 import './globals.css';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/config/auth.config';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,10 +20,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Temporarily disable server-side session fetching to avoid JWT errors
+  // The SessionProvider will handle session on the client side
+  const session = null;
+  
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Providers>
+        <Providers session={session}>
           {children}
         </Providers>
       </body>
