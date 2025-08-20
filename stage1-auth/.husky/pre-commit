@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Prevent committing environment files
+if git diff --cached --name-only | grep -E "\\.env"; then
+    echo "❌ ERROR: Attempting to commit environment files!"
+    echo "Environment files contain sensitive credentials and should never be committed."
+    echo ""
+    echo "Files being committed:"
+    git diff --cached --name-only | grep -E "\\.env"
+    echo ""
+    echo "Please remove these files from your commit:"
+    echo "git reset HEAD <filename>"
+    echo ""
+    echo "Use .env.example as a template instead."
+    exit 1
+fi
+
+# Run linting and type checking
+npm run lint --if-present
+npm run type-check --if-present
