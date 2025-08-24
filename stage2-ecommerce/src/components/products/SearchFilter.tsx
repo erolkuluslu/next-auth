@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui';
 import { useAppSelector, useAppDispatch } from '@/lib/store';
 import { selectSearchQuery } from '@/lib/store/selectors';
 import { setSearchQuery } from '@/lib/store/slices/filtersSlice';
 
 export function SearchFilter() {
+  const t = useTranslations('common.filters.search');
   const dispatch = useAppDispatch();
   const searchQuery = useAppSelector(selectSearchQuery);
   const [localQuery, setLocalQuery] = useState(searchQuery);
@@ -36,7 +38,7 @@ export function SearchFilter() {
       <div className="relative">
         <Input
           type="text"
-          placeholder="Ürün ara..."
+          placeholder={t('placeholder')}
           value={localQuery}
           onChange={(e) => handleSearchChange(e.target.value)}
           className="pl-10 pr-10"

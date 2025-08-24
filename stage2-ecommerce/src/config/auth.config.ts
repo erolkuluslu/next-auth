@@ -42,7 +42,7 @@ function extractAuth0Roles(profile: any): { primaryRole: Role; allRoles: Role[] 
   let roles: string[] = [];
   
   // 1. Custom claims (recommended Auth0 pattern)
-  const customRolesClaim = profile['https://yourapp.com/roles'] || profile['https://localhost:3001/roles'];
+  const customRolesClaim = profile['https://yourapp.com/roles'] || profile['https://localhost:3000/roles'];
   if (customRolesClaim) {
     roles = Array.isArray(customRolesClaim) ? customRolesClaim : [customRolesClaim];
   }

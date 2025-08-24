@@ -8,8 +8,8 @@ jest.mock('@/config/environment', () => ({
       appName: 'Test E-commerce',
       version: '2.0.0',
       nodeEnv: 'test',
-      port: 3001,
-      siteUrl: 'http://localhost:3001',
+      port: 3000,
+      siteUrl: 'http://localhost:3000',
     },
     i18n: {
       defaultLocale: 'tr',
@@ -89,7 +89,7 @@ describe('HomePage Integration Tests', () => {
     expect(
       screen.getByText(/Built with Next.js 14, TypeScript & Tailwind CSS/)
     ).toBeInTheDocument();
-    expect(screen.getByText('Port: 3001')).toBeInTheDocument();
+    expect(screen.getByText('Port: 3000')).toBeInTheDocument();
     expect(screen.getByText('Environment: test')).toBeInTheDocument();
     expect(screen.getByText('Version: 2.0.0')).toBeInTheDocument();
   });

@@ -1,11 +1,10 @@
-'use client';
-
 import Link from 'next/link';
-import { useLocale } from 'next-intl';
+import { getLocale } from 'next-intl/server';
 import { Container, Button } from '@/components/ui';
 
-export function Hero() {
-  const locale = useLocale();
+export async function HeroServer() {
+  const locale = await getLocale();
+  
   return (
     <section className="relative bg-gradient-to-br from-gray-50 via-primary-50 to-secondary-50 py-20 lg:py-32">
       {/* Professional Background Pattern */}
@@ -13,18 +12,18 @@ export function Hero() {
         {/* Subtle geometric patterns instead of AI-style blurred circles */}
         <div className="absolute top-0 right-0 w-96 h-96 opacity-5">
           <svg viewBox="0 0 100 100" className="w-full h-full text-primary-600">
-            <pattern id="professional-grid-client" width="10" height="10" patternUnits="userSpaceOnUse">
+            <pattern id="professional-grid" width="10" height="10" patternUnits="userSpaceOnUse">
               <path d="M 10 0 L 0 0 0 10" fill="none" stroke="currentColor" strokeWidth="0.5"/>
             </pattern>
-            <rect width="100" height="100" fill="url(#professional-grid-client)" />
+            <rect width="100" height="100" fill="url(#professional-grid)" />
           </svg>
         </div>
         <div className="absolute bottom-0 left-0 w-80 h-80 opacity-3">
           <svg viewBox="0 0 100 100" className="w-full h-full text-secondary-600">
-            <pattern id="professional-dots-client" width="8" height="8" patternUnits="userSpaceOnUse">
+            <pattern id="professional-dots" width="8" height="8" patternUnits="userSpaceOnUse">
               <circle cx="4" cy="4" r="1" fill="currentColor" opacity="0.3"/>
             </pattern>
-            <rect width="100" height="100" fill="url(#professional-dots-client)" />
+            <rect width="100" height="100" fill="url(#professional-dots)" />
           </svg>
         </div>
       </div>
@@ -162,4 +161,4 @@ export function Hero() {
   );
 }
 
-export default Hero;
+export default HeroServer;

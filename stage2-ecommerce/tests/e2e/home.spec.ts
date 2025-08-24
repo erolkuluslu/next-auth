@@ -65,7 +65,7 @@ test.describe('Home Page', () => {
     await expect(footer).toContainText(
       'Built with Next.js 14, TypeScript & Tailwind CSS'
     );
-    await expect(footer).toContainText('Port: 3001');
+    await expect(footer).toContainText('Port: 3000');
     await expect(footer).toContainText('Environment:');
     await expect(footer).toContainText('Version:');
   });

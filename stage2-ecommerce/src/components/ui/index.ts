@@ -16,6 +16,10 @@ export {
 } from './Skeleton';
 export { default as LoadingSpinner } from './LoadingSpinner';
 export { ProductCard } from './ProductCard';
+export { ProductCardProfessional } from './ProductCardProfessional';
+export { ProductImage } from './ProductImage';
+export { OptimizedImage } from './OptimizedImage';
+export { ErrorBoundary, withErrorBoundary } from './ErrorBoundary';
 
 // Type exports
 export type { ButtonProps } from './Button';

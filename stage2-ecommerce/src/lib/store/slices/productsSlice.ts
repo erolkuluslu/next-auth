@@ -67,6 +67,15 @@ const productsSlice = createSlice({
     setCurrentCategory: (state, action: PayloadAction<string | null>) => {
       state.currentCategory = action.payload;
     },
+    setProducts: (state, action: PayloadAction<Product[]>) => {
+      state.items = action.payload;
+      state.loading = false;
+      state.error = null;
+      state.lastFetched = Date.now();
+    },
+    setCategories: (state, action: PayloadAction<string[]>) => {
+      state.categories = action.payload;
+    },
   },
   extraReducers: (builder) => {
     // Fetch all products
@@ -113,5 +122,5 @@ const productsSlice = createSlice({
   },
 });
 
-export const { clearError, setCurrentCategory } = productsSlice.actions;
+export const { clearError, setCurrentCategory, setProducts, setCategories } = productsSlice.actions;
 export default productsSlice.reducer;

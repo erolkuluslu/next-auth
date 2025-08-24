@@ -21,7 +21,7 @@ describe('Environment Configuration', () => {
   it('should load default development configuration', () => {
     // Set minimum required env vars
     process.env.NODE_ENV = 'development';
-    process.env.NEXTAUTH_URL = 'http://localhost:3001';
+    process.env.NEXTAUTH_URL = 'http://localhost:3000';
     process.env.NEXTAUTH_SECRET = 'test-secret-key-min-32-characters-long';
     process.env.AUTH0_CLIENT_ID = 'test-client-id';
     process.env.AUTH0_CLIENT_SECRET = 'test-client-secret';
@@ -30,7 +30,7 @@ describe('Environment Configuration', () => {
     const config = getStage2EnvironmentConfig();
 
     expect(config.app.nodeEnv).toBe('development');
-    expect(config.app.port).toBe(3001);
+    expect(config.app.port).toBe(3000);
     expect(config.i18n.defaultLocale).toBe('tr');
     expect(config.i18n.supportedLocales).toContain('tr');
     expect(config.i18n.supportedLocales).toContain('en');

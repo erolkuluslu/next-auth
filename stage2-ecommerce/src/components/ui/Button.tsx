@@ -4,22 +4,22 @@ import { cn } from '@/lib/utils';
 import LoadingSpinner from './LoadingSpinner';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background',
+  'inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background hover:scale-[1.02] active:scale-[0.98] hover:shadow-md',
   {
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground hover:bg-primary/90',
+          'bg-primary-500 text-white hover:bg-primary-600 hover:shadow-lg active:bg-primary-700',
         destructive:
-          'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+          'bg-red-600 text-white hover:bg-red-700 hover:shadow-lg active:bg-red-800',
         outline:
-          'border border-input hover:bg-accent hover:text-accent-foreground',
+          'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md active:bg-gray-100',
         secondary:
-          'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'underline-offset-4 hover:underline text-primary',
-        success: 'bg-green-600 text-white hover:bg-green-700',
-        warning: 'bg-yellow-600 text-white hover:bg-yellow-700',
+          'bg-secondary-500 text-white hover:bg-secondary-600 hover:shadow-lg active:bg-secondary-700',
+        ghost: 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200',
+        link: 'underline-offset-4 hover:underline text-primary-600 hover:text-primary-700',
+        success: 'bg-green-600 text-white hover:bg-green-700 hover:shadow-lg active:bg-green-800',
+        warning: 'bg-yellow-600 text-white hover:bg-yellow-700 hover:shadow-lg active:bg-yellow-800',
       },
       size: {
         default: 'h-10 py-2 px-4',

@@ -59,11 +59,11 @@ const environmentSchema = z.object({
   PORT: z
     .string()
     .transform(val => parseInt(val))
-    .default('3001'),
+    .default('3000'),
   APP_NAME: z.string().default('Stage 2 E-commerce'),
   APP_VERSION: z.string().default('2.0.0'),
   BUILD_NUMBER: z.string().optional(),
-  SITE_URL: z.string().url().default('http://localhost:3001'),
+  SITE_URL: z.string().url().default('http://localhost:3000'),
 
   // I18n
   NEXT_PUBLIC_DEFAULT_LOCALE: z.string().default('tr'),
@@ -153,13 +153,13 @@ class Stage2EnvironmentValidator {
       AUTH0_CLIENT_ID: 'build-placeholder',
       AUTH0_CLIENT_SECRET: 'build-placeholder',
       AUTH0_DOMAIN: 'build-placeholder',
-      NEXTAUTH_URL: 'http://localhost:3001',
+      NEXTAUTH_URL: 'http://localhost:3000',
       NEXTAUTH_SECRET: 'build-placeholder-min-32-characters-long',
       NODE_ENV: 'production',
-      PORT: 3001,
+      PORT: 3000,
       APP_NAME: 'Stage 2 E-commerce',
       APP_VERSION: '2.0.0',
-      SITE_URL: 'http://localhost:3001',
+      SITE_URL: 'http://localhost:3000',
       NEXT_PUBLIC_DEFAULT_LOCALE: 'tr',
       NEXT_PUBLIC_SUPPORTED_LOCALES: 'tr,en',
       FAKE_STORE_API_URL: 'https://fakestoreapi.com',
@@ -181,16 +181,16 @@ class Stage2EnvironmentValidator {
       NEXTAUTH_URL:
         typeof window !== 'undefined'
           ? window.location.origin
-          : 'http://localhost:3001',
+          : 'http://localhost:3000',
       NEXTAUTH_SECRET: 'client-side-placeholder',
       NODE_ENV: 'development',
-      PORT: 3001,
+      PORT: 3000,
       APP_NAME: 'Stage 2 E-commerce',
       APP_VERSION: '2.0.0',
       SITE_URL:
         typeof window !== 'undefined'
           ? window.location.origin
-          : 'http://localhost:3001',
+          : 'http://localhost:3000',
       NEXT_PUBLIC_DEFAULT_LOCALE: 'tr',
       NEXT_PUBLIC_SUPPORTED_LOCALES: 'tr,en',
       FAKE_STORE_API_URL: 'https://fakestoreapi.com',
@@ -234,7 +234,7 @@ export class Stage2EnvironmentConfigFactory {
         siteUrl: env.SITE_URL,
       },
       security: {
-        corsOrigins: env.CORS_ORIGINS?.split(',') || ['http://localhost:3001'],
+        corsOrigins: env.CORS_ORIGINS?.split(',') || ['http://localhost:3000'],
         rateLimitMax: env.RATE_LIMIT_MAX,
         rateLimitWindowMs: env.RATE_LIMIT_WINDOW_MS,
         enableDebug: env.NEXTAUTH_DEBUG === 'true' || isDevelopment,

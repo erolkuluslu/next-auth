@@ -51,13 +51,13 @@ const cartSlice = createSlice({
       state.itemCount = state.items.reduce((sum, item) => sum + item.quantity, 0);
       state.total = state.items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
     },
-    updateQuantity: (state, action: PayloadAction<{ productId: number; quantity: number }>) => {
-      const { productId, quantity } = action.payload;
-      const item = state.items.find(item => item.product.id === productId);
+    updateQuantity: (state, action: PayloadAction<{ id: number; quantity: number }>) => {
+      const { id, quantity } = action.payload;
+      const item = state.items.find(item => item.product.id === id);
 
       if (item) {
         if (quantity <= 0) {
-          state.items = state.items.filter(item => item.product.id !== productId);
+          state.items = state.items.filter(item => item.product.id !== id);
         } else {
           item.quantity = quantity;
         }
