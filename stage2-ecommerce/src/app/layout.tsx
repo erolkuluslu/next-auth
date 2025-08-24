@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { getStage2EnvironmentConfig } from '@/config/environment';
 import Providers from './providers';
-import Header from '@/components/layout/Header';
+import HeaderWrapper from '@/components/layout/HeaderWrapper';
 import Footer from '@/components/layout/Footer';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -59,11 +59,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang={env.i18n.defaultLocale} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
         <Providers>
           <div className="min-h-screen flex flex-col">
-            <Header />
+            <HeaderWrapper />
             <main className="flex-1">{children}</main>
             <Footer />
           </div>

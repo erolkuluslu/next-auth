@@ -2,38 +2,61 @@
 
 import { useState } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Container, Button, Badge } from '@/components/ui';
 import { useRBAC } from '@/hooks/useRBAC';
 import { useAppSelector } from '@/lib/store';
 import { selectCartItemCount } from '@/lib/store/selectors';
 
-export default function Header() {
+interface HeaderProps {
+  locale?: string;
+  messages?: any;
+}
+
+export default function Header({ locale = 'en', messages = {} }: HeaderProps) {
   const { data: session, status } = useSession();
   const { isAdmin, isModerator } = useRBAC();
   const router = useRouter();
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const cartItemCount = useAppSelector(selectCartItemCount);
 
+  // Simple translation function fallback
+  const t = (key: string) => {
+    const keys = key.split('.');
+    let value = messages;
+    for (const k of keys) {
+      value = value?.[k];
+    }
+    return value || key;
+  };
+
   const handleSignIn = () => {
-    signIn('auth0', { callbackUrl: '/dashboard' });
+    signIn('auth0', { callbackUrl: `/${locale}/dashboard` });
   };
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: '/' });
+    signOut({ callbackUrl: `/${locale}` });
+  };
+
+  const switchLocale = (newLocale: string) => {
+    // Extract the current path without the locale
+    const pathWithoutLocale = pathname.replace(`/${locale}`, '');
+    const newPath = `/${newLocale}${pathWithoutLocale || ''}`;
+    router.push(newPath);
   };
 
   const navigation = [
-    { name: 'Ana Sayfa', href: '/' },
-    { name: 'Ürünler', href: '/products' },
-    { name: 'Kategoriler', href: '/categories' },
+    { name: t('common.navigation.home'), href: `/${locale}` },
+    { name: t('common.navigation.products'), href: `/${locale}/products` },
+    { name: t('common.navigation.categories'), href: `/${locale}/categories` },
   ];
 
   const userNavigation = [
-    { name: 'Profil', href: '/profile' },
-    { name: 'Siparişlerim', href: '/orders' },
-    ...(isModerator() || isAdmin() ? [{ name: 'Yönetim', href: '/admin' }] : []),
+    { name: t('common.navigation.profile'), href: `/${locale}/profile` },
+    { name: t('common.navigation.orders'), href: `/${locale}/orders` },
+    ...(isModerator() || isAdmin() ? [{ name: t('common.navigation.admin'), href: `/${locale}/admin` }] : []),
   ];
 
   return (
@@ -71,11 +94,8 @@ export default function Header() {
             <div className="hidden sm:block">
               <select
                 className="text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                defaultValue="tr"
-                onChange={(e) => {
-                  // TODO: Implement locale switching
-                  console.log('Switch to locale:', e.target.value);
-                }}
+                value={locale}
+                onChange={(e) => switchLocale(e.target.value)}
               >
                 <option value="tr">🇹🇷 TR</option>
                 <option value="en">🇺🇸 EN</option>
@@ -84,7 +104,7 @@ export default function Header() {
 
             {/* Cart */}
             <button
-              onClick={() => router.push('/cart')}
+              onClick={() => router.push(`/${locale}/cart`)}
               className="relative p-2 text-gray-600 hover:text-gray-900 transition-colors"
               aria-label={`Shopping cart with ${cartItemCount} items`}
             >
@@ -167,7 +187,7 @@ export default function Header() {
                         onClick={handleSignOut}
                         className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                       >
-                        Çıkış Yap
+                        {t('common.auth.signOut')}
                       </button>
                     </div>
                   </div>
@@ -178,7 +198,7 @@ export default function Header() {
                   variant="ghost"
                   size="sm"
                   className="md:hidden"
-                  onClick={() => router.push('/profile')}
+                  onClick={() => router.push(`/${locale}/profile`)}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -187,7 +207,7 @@ export default function Header() {
               </div>
             ) : (
               <Button onClick={handleSignIn} size="sm">
-                Giriş Yap
+                {t('common.auth.signIn')}
               </Button>
             )}
 
@@ -247,7 +267,7 @@ export default function Header() {
                     }}
                     className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
                   >
-                    Çıkış Yap
+                    {t('common.auth.signOut')}
                   </button>
                 </div>
               )}
@@ -256,11 +276,8 @@ export default function Header() {
               <div className="px-4 py-2">
                 <select
                   className="w-full text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  defaultValue="tr"
-                  onChange={(e) => {
-                    // TODO: Implement locale switching
-                    console.log('Switch to locale:', e.target.value);
-                  }}
+                  value={locale}
+                  onChange={(e) => switchLocale(e.target.value)}
                 >
                   <option value="tr">🇹🇷 Türkçe</option>
                   <option value="en">🇺🇸 English</option>
