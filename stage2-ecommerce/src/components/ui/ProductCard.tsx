@@ -1,27 +1,30 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Product } from '@/types/product';
 import { Card, CardContent, Button, Badge } from '@/components/ui';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { formatPrice } from '@/lib/utils/api';
 
 interface ProductCardProps {
   product: Product;
+  locale: string;
   onAddToCart?: (product: Product) => void;
   loading?: boolean;
   className?: string;
+  priority?: boolean;
 }
 
 export function ProductCard({ 
   product, 
+  locale,
   onAddToCart, 
   loading = false,
-  className 
+  className,
+  priority = false
 }: ProductCardProps) {
-  const [imageLoading, setImageLoading] = useState(true);
-  const [imageError, setImageError] = useState(false);
+  const t = useTranslations('common.products');
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent navigation when clicking the button
@@ -36,7 +39,7 @@ export function ProductCard({
 
     for (let i = 0; i < fullStars; i++) {
       stars.push(
-        <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+        <svg key={i} className="w-3.5 h-3.5 text-secondary-500 fill-current" viewBox="0 0 20 20">
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
         </svg>
       );
@@ -44,14 +47,14 @@ export function ProductCard({
 
     if (hasHalfStar) {
       stars.push(
-        <svg key="half" className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+        <svg key="half" className="w-3.5 h-3.5 text-secondary-500 fill-current" viewBox="0 0 20 20">
           <defs>
-            <linearGradient id="half-star" x1="0%" y1="0%" x2="100%" y2="0%">
+            <linearGradient id={`half-star-${product.id}`} x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="50%" stopColor="currentColor" />
-              <stop offset="50%" stopColor="transparent" />
+              <stop offset="50%" stopColor="#D1D5DB" />
             </linearGradient>
           </defs>
-          <path fill="url(#half-star)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          <path fill={`url(#half-star-${product.id})`} d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
         </svg>
       );
     }
@@ -60,7 +63,7 @@ export function ProductCard({
     const remainingStars = 5 - Math.ceil(rating);
     for (let i = 0; i < remainingStars; i++) {
       stars.push(
-        <svg key={`empty-${i}`} className="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 20 20">
+        <svg key={`empty-${i}`} className="w-3.5 h-3.5 text-gray-300 fill-current" viewBox="0 0 20 20">
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
         </svg>
       );
@@ -86,98 +89,94 @@ export function ProductCard({
   }
 
   return (
-    <Link href={`/products/${product.id}`} className={className}>
-      <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 h-full">
-        <CardContent className="p-0 h-full flex flex-col">
-          {/* Product Image */}
-          <div className="relative aspect-square overflow-hidden rounded-t-lg bg-gray-100">
-            {!imageError ? (
-              <Image
-                src={product.image}
-                alt={product.title}
+    <div className={`product-card ${className}`}>
+      <div className="product-card__container group bg-white border border-gray-200 hover:border-primary-300 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 h-full flex flex-col rounded-xl overflow-hidden touch-manipulation shadow-sm product-card-light">
+        {/* Product Image - Fixed 1:1 Aspect Ratio Container */}
+        <Link href={`/${locale}/products/${product.id}`} className="product-card__image-link block">
+          <div className="product-card__image-container relative aspect-square bg-gray-50 border-b border-gray-100 flex-shrink-0 overflow-hidden">
+            <div className="product-card__image-wrapper absolute inset-4 flex items-center justify-center">
+              <OptimizedImage
+                product={product}
                 fill
-                className={`object-contain group-hover:scale-105 transition-transform duration-300 ${
-                  imageLoading ? 'opacity-0' : 'opacity-100'
-                }`}
-                onLoad={() => setImageLoading(false)}
-                onError={() => {
-                  setImageError(true);
-                  setImageLoading(false);
-                }}
+                className="group-hover:scale-105 transition-transform duration-500"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                quality={priority ? 95 : 85}
+                loading={priority ? "eager" : "lazy"}
+                placeholder="blur"
+                priority={priority}
               />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400">
-                <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={1} 
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" 
-                  />
-                </svg>
-              </div>
-            )}
-
-            {/* Category Badge */}
-            <Badge 
-              variant="secondary" 
-              className="absolute top-2 left-2 capitalize text-xs"
-            >
-              {product.category}
-            </Badge>
-
-            {/* Loading Overlay */}
-            {imageLoading && (
-              <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-t-lg" />
-            )}
+            </div>
           </div>
+        </Link>
 
-          {/* Product Details */}
-          <div className="p-4 flex-1 flex flex-col">
-            {/* Title */}
-            <h3 className="font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors">
-              {product.title}
-            </h3>
-
-            {/* Rating */}
-            <div className="flex items-center gap-2 mb-3">
-              <div className="flex items-center">
+        {/* Product Details - Optimized for Equal Heights */}
+        <div className="product-card__content flex-1 flex flex-col">
+          {/* Card Header - Flexbox Layout to Prevent Overlap */}
+          <div className="product-card__header flex items-start justify-between gap-3 mb-3">
+            {/* Category Badge - Left Side */}
+            <div className="product-card__category flex-shrink-0">
+              <span className="product-card__category-badge inline-block bg-gray-100 text-gray-700 text-xs px-3 py-1.5 rounded-full font-medium uppercase tracking-wide overflow-hidden text-ellipsis">
+                {product.category}
+              </span>
+            </div>
+            
+            {/* Rating - Right Side */}
+            <div className="product-card__reviews flex items-center gap-1 flex-shrink-0">
+              <div className="product-card__stars flex items-center gap-0.5">
                 {getRatingStars(product.rating.rate)}
               </div>
-              <span className="text-sm text-gray-600">
+              <span className="product-card__review-count text-xs text-gray-500 font-medium">
                 ({product.rating.count})
               </span>
             </div>
-
-            {/* Price */}
-            <div className="mt-auto">
-              <div className="text-xl font-bold text-gray-900 mb-3">
-                {formatPrice(product.price)}
-              </div>
-
-              {/* Add to Cart Button */}
-              <Button
-                onClick={handleAddToCart}
-                className="w-full"
-                size="sm"
-                disabled={!onAddToCart}
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5.5A1 1 0 006 20h12a1 1 0 001-1v0a1 1 0 00-1-1H6m0 0L5 8H3" 
-                  />
-                </svg>
-                Sepete Ekle
-              </Button>
-            </div>
           </div>
-        </CardContent>
-      </Card>
-    </Link>
+          
+          {/* Title - Enhanced Typography with Proper Ellipsis */}
+          <Link href={`/${locale}/products/${product.id}`} className="product-card__title-link block mb-3">
+            <h2 className="product-card__title font-bold text-lg text-gray-900 line-clamp-2 group-hover:text-primary-600 transition-colors duration-200 leading-tight h-14 overflow-hidden text-ellipsis">
+              {product.title}
+            </h2>
+          </Link>
+
+          {/* Rating Score - Moved Below Title for Better Hierarchy */}
+          <div className="product-card__rating flex items-center gap-2 mb-4">
+            <span className="product-card__rating-score text-sm font-semibold text-gray-700">
+              {product.rating.rate} ⭐
+            </span>
+            <span className="product-card__rating-text text-sm text-gray-500 font-medium">
+              {product.rating.count} reviews
+            </span>
+          </div>
+
+          {/* Spacer to push price and button to bottom */}
+          <div className="product-card__spacer flex-1"></div>
+
+          {/* Price - Prominent and Bold */}
+          <div className="product-card__price text-2xl font-extrabold text-gray-900 mb-4 tracking-tight">
+            {formatPrice(product.price)}
+          </div>
+
+          {/* Add to Cart Button - Enhanced with Sophisticated Hover */}
+          <button
+            onClick={handleAddToCart}
+            disabled={!onAddToCart}
+            className="product-card__button product-card__button--primary w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white py-3 px-4 font-semibold hover:from-primary-600 hover:to-primary-700 hover:shadow-xl disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 rounded-lg group/btn relative overflow-hidden"
+          >
+            {/* Button hover effect overlay */}
+            <div className="product-card__button-overlay absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></div>
+            <svg className="product-card__button-icon w-5 h-5 group-hover/btn:scale-110 transition-transform duration-200 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5.5A1 1 0 006 20h12a1 1 0 001-1v0a1 1 0 00-1-1H6m0 0L5 8H3" 
+              />
+            </svg>
+            <span className="product-card__button-text relative z-10">{t('addToCart')}</span>
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

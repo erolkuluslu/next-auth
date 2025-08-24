@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Professional Design Tokens */
+@import '../styles/design-tokens.css';
+@import '../styles/professional-design.css';
+
+/* BEM CSS for Components */
+@import '../styles/bem-products.css';
+@import '../styles/bem-cart.css';
+
 @layer base {
   :root {
     --background: 0 0% 100%;

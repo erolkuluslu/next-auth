@@ -1,0 +1,149 @@
+/* BEM CSS for Products Grid and Card Components */
+
+/* Products Container - 2-column layout as per task requirements */
+.products-main {
+  @apply min-h-screen;
+}
+
+.products-container {
+  @apply max-w-4xl mx-auto p-8;
+  /* Task requirement: 2rem gap between grid items */
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .products-container {
+    @apply p-4;
+  }
+}
+
+/* Product Item */
+.product-item {
+  @apply w-full;
+}
+
+/* Product Card - Task requirements: consistent padding, proper spacing */
+.product-card {
+  @apply h-full flex flex-col;
+}
+
+.product-card__container {
+  @apply relative h-full;
+  /* Task requirement: consistent internal padding */
+  padding: 1.5rem;
+}
+
+/* Image Section */
+.product-card__image-link {
+  @apply block;
+}
+
+.product-card__image-container {
+  @apply bg-white;
+}
+
+.product-card__image-wrapper {
+  @apply flex items-center justify-center;
+}
+
+/* Content Section */
+.product-card__content {
+  @apply bg-white;
+}
+
+/* Header Section */
+.product-card__header {
+  @apply flex-wrap;
+}
+
+.product-card__category {
+  @apply max-w-[60%];
+}
+
+.product-card__category-badge {
+  @apply truncate;
+}
+
+.product-card__reviews {
+  @apply min-w-0;
+}
+
+.product-card__stars {
+  @apply flex-shrink-0;
+}
+
+.product-card__review-count {
+  @apply whitespace-nowrap;
+}
+
+/* Title Section */
+.product-card__title-link {
+  @apply no-underline;
+}
+
+.product-card__title {
+  @apply cursor-pointer;
+}
+
+/* Rating Section */
+.product-card__rating {
+  @apply justify-start;
+}
+
+.product-card__rating-score {
+  @apply flex-shrink-0;
+}
+
+.product-card__rating-text {
+  @apply truncate;
+}
+
+/* Spacer */
+.product-card__spacer {
+  @apply min-h-2;
+}
+
+/* Price Section */
+.product-card__price {
+  @apply text-center md:text-left;
+}
+
+/* Button Section */
+.product-card__button {
+  @apply relative cursor-pointer;
+}
+
+.product-card__button--primary {
+  @apply bg-primary-600 hover:bg-primary-700;
+}
+
+.product-card__button:disabled {
+  @apply cursor-not-allowed opacity-50;
+}
+
+.product-card__button-overlay {
+  @apply pointer-events-none;
+}
+
+.product-card__button-icon {
+  @apply flex-shrink-0;
+}
+
+.product-card__button-text {
+  @apply font-semibold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .product-card__header {
+    @apply flex-col gap-2;
+  }
+
+  .product-card__category {
+    @apply max-w-full;
+  }
+
+  .product-card__reviews {
+    @apply self-start;
+  }
+}

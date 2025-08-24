@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { ProductCard } from '@/components/ui/ProductCard';
 import { ProductCardSkeleton } from '@/components/ui/Skeleton';
 import { useAppSelector, useAppDispatch } from '@/lib/store';
@@ -8,10 +9,12 @@ import { addToCart } from '@/lib/store/slices/cartSlice';
 import { Product } from '@/types/product';
 
 interface ProductsGridProps {
+  locale: string;
   className?: string;
 }
 
-export function ProductsGrid({ className }: ProductsGridProps) {
+export function ProductsGrid({ locale, className }: ProductsGridProps) {
+  const t = useTranslations('common.products');
   const dispatch = useAppDispatch();
   const products = useAppSelector(selectSortedProducts);
   const loading = useAppSelector(selectProductsLoading);
@@ -36,7 +39,7 @@ export function ProductsGrid({ className }: ProductsGridProps) {
             </svg>
           </div>
           <h3 className="text-xl font-semibold text-red-800 mb-2">
-            Ürünler Yüklenemedi
+            {t('loadError')}
           </h3>
           <p className="text-red-600 mb-4">
             {error}
@@ -45,7 +48,7 @@ export function ProductsGrid({ className }: ProductsGridProps) {
             onClick={() => window.location.reload()}
             className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
           >
-            Tekrar Dene
+            {t('tryAgain')}
           </button>
         </div>
       </div>
@@ -54,11 +57,15 @@ export function ProductsGrid({ className }: ProductsGridProps) {
 
   if (loading) {
     return (
-      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${className}`}>
-        {Array.from({ length: 8 }).map((_, index) => (
-          <ProductCardSkeleton key={index} />
-        ))}
-      </div>
+      <main className="products-main">
+        <section className={`products-container grid grid-cols-1 md:grid-cols-2 auto-rows-fr items-stretch ${className}`}>
+          {Array.from({ length: 8 }).map((_, index) => (
+            <article key={index} className="product-item flex">
+              <ProductCardSkeleton />
+            </article>
+          ))}
+        </section>
+      </main>
     );
   }
 
@@ -77,10 +84,10 @@ export function ProductsGrid({ className }: ProductsGridProps) {
             </svg>
           </div>
           <h3 className="text-xl font-semibold text-gray-800 mb-2">
-            Ürün Bulunamadı
+            {t('notFound')}
           </h3>
           <p className="text-gray-600 mb-4">
-            Arama kriterlerinize uygun ürün bulunamadı. Lütfen filtrelerinizi kontrol edin.
+            {t('noResults')}
           </p>
         </div>
       </div>
@@ -88,16 +95,20 @@ export function ProductsGrid({ className }: ProductsGridProps) {
   }
 
   return (
-    <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${className}`}>
-      {products.map((product) => (
-        <ProductCard
-          key={product.id}
-          product={product}
-          onAddToCart={handleAddToCart}
-          className="h-full"
-        />
-      ))}
-    </div>
+    <main className="products-main">
+      <section className={`products-container grid grid-cols-1 md:grid-cols-2 auto-rows-fr items-stretch ${className}`}>
+        {products.map((product) => (
+          <article key={product.id} className="product-item flex">
+            <ProductCard
+              product={product}
+              locale={locale}
+              onAddToCart={handleAddToCart}
+              className="w-full"
+            />
+          </article>
+        ))}
+      </section>
+    </main>
   );
 }
 
