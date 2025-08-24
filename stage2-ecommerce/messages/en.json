@@ -1,0 +1,56 @@
+{
+  "common": {
+    "navigation": {
+      "home": "Home",
+      "products": "Shop", 
+      "categories": "Collections",
+      "profile": "My Account",
+      "orders": "My Orders",
+      "admin": "Dashboard"
+    },
+    "auth": {
+      "signIn": "Sign In",
+      "signOut": "Sign Out"
+    },
+    "cart": {
+      "title": "My Cart",
+      "empty": "Your cart is empty",
+      "startShopping": "Start Shopping"
+    },
+    "filters": {
+      "title": "Filters",
+      "clear": "Clear",
+      "reset": "Reset",
+      "priceRange": "Price Range",
+      "minPrice": "Min",
+      "maxPrice": "Max", 
+      "selected": "Selected",
+      "available": "Available",
+      "autoApply": "Filters apply automatically",
+      "priceIncludesTax": "Prices include tax",
+      "foundProducts": "products found",
+      "category": "Category",
+      "allCategories": "All Categories",
+      "search": {
+        "placeholder": "Search products..."
+      },
+      "sort": {
+        "label": "Sort by:",
+        "newest": "Newest",
+        "nameAsc": "Name (A-Z)",
+        "nameDesc": "Name (Z-A)",
+        "priceAsc": "Price (Low-High)",
+        "priceDesc": "Price (High-Low)",
+        "ratingDesc": "Highest Rated"
+      }
+    },
+    "products": {
+      "addToCart": "Add to Cart",
+      "notFound": "Products Not Found",
+      "noResults": "No products found matching your search criteria. Please check your filters.",
+      "loadError": "Products Could Not Be Loaded",
+      "tryAgain": "Try Again",
+      "loading": "Loading products..."
+    }
+  }
+}

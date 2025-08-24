@@ -1,0 +1,56 @@
+{
+  "common": {
+    "navigation": {
+      "home": "Ana Sayfa",
+      "products": "Mağaza",
+      "categories": "Koleksiyonlar", 
+      "profile": "Hesabım",
+      "orders": "Siparişlerim",
+      "admin": "Yönetim Paneli"
+    },
+    "auth": {
+      "signIn": "Giriş Yap",
+      "signOut": "Çıkış Yap"
+    },
+    "cart": {
+      "title": "Sepetim",
+      "empty": "Sepetiniz boş",
+      "startShopping": "Alışverişe Başla"
+    },
+    "filters": {
+      "title": "Filtreler",
+      "clear": "Temizle",
+      "reset": "Sıfırla",
+      "priceRange": "Fiyat Aralığı",
+      "minPrice": "Min",
+      "maxPrice": "Maks", 
+      "selected": "Seçili",
+      "available": "Mevcut",
+      "autoApply": "Filtreler otomatik uygulanır",
+      "priceIncludesTax": "Fiyatlar KDV dahildir",
+      "foundProducts": "ürün bulundu",
+      "category": "Kategori",
+      "allCategories": "Tüm Kategoriler",
+      "search": {
+        "placeholder": "Ürün ara..."
+      },
+      "sort": {
+        "label": "Sıralama:",
+        "newest": "En Yeni",
+        "nameAsc": "İsim (A-Z)",
+        "nameDesc": "İsim (Z-A)",
+        "priceAsc": "Fiyat (Düşük-Yüksek)",
+        "priceDesc": "Fiyat (Yüksek-Düşük)",
+        "ratingDesc": "En Yüksek Puan"
+      }
+    },
+    "products": {
+      "addToCart": "Sepete Ekle",
+      "notFound": "Ürün Bulunamadı",
+      "noResults": "Arama kriterlerinize uygun ürün bulunamadı. Lütfen filtrelerinizi kontrol edin.",
+      "loadError": "Ürünler Yüklenemedi",
+      "tryAgain": "Tekrar Dene",
+      "loading": "Ürünler yükleniyor..."
+    }
+  }
+}

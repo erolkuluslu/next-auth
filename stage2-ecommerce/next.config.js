@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
+const createNextIntlPlugin = require('next-intl/plugin');
+
+const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
+
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
@@ -43,12 +47,29 @@ const nextConfig = {
     ];
   },
 
+  // Redirects for favicon and other static assets
+  async redirects() {
+    return [
+      {
+        source: '/apple-touch-icon.png',
+        destination: '/favicon.ico',
+        permanent: true,
+      },
+      {
+        source: '/apple-touch-icon-precomposed.png',
+        destination: '/favicon.ico',
+        permanent: true,
+      },
+    ];
+  },
+
   // Image optimization for e-commerce
   images: {
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'fakestoreapi.com',
+        pathname: '/img/**',
       },
       {
         protocol: 'https',
@@ -68,6 +89,10 @@ const nextConfig = {
       },
     ],
     formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60,
+    dangerouslyAllowSVG: false,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    unoptimized: false,
   },
 
   // Webpack configuration
@@ -144,4 +169,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withNextIntl(nextConfig);
