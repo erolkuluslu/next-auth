@@ -1,32 +1,35 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Select } from '@/components/ui';
-import { useAppSelector, useAppDispatch } from '@/lib/store';
+import { useAppSelector } from '@/lib/store';
 import { selectSortBy } from '@/lib/store/selectors';
-import { setSortBy, SortOption } from '@/lib/store/slices/filtersSlice';
+import { SortOption } from '@/lib/store/slices/filtersSlice';
+import { useProductFilters } from '@/hooks/useProductFilters';
 
 export function SortSelect() {
-  const dispatch = useAppDispatch();
+  const t = useTranslations('common.filters.sort');
   const sortBy = useAppSelector(selectSortBy);
+  const { updateSort } = useProductFilters();
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
-    dispatch(setSortBy(value as SortOption));
+    updateSort(value as SortOption);
   };
 
   const options = [
-    { value: 'newest', label: 'En Yeni' },
-    { value: 'name-asc', label: 'İsim (A-Z)' },
-    { value: 'name-desc', label: 'İsim (Z-A)' },
-    { value: 'price-asc', label: 'Fiyat (Düşük-Yüksek)' },
-    { value: 'price-desc', label: 'Fiyat (Yüksek-Düşük)' },
-    { value: 'rating-desc', label: 'En Yüksek Puan' },
+    { value: 'newest', label: t('newest') },
+    { value: 'name-asc', label: t('nameAsc') },
+    { value: 'name-desc', label: t('nameDesc') },
+    { value: 'price-asc', label: t('priceAsc') },
+    { value: 'price-desc', label: t('priceDesc') },
+    { value: 'rating-desc', label: t('ratingDesc') },
   ];
 
   return (
     <div className="flex items-center space-x-2">
       <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
-        Sıralama:
+        {t('label')}
       </label>
       <Select
         value={sortBy}

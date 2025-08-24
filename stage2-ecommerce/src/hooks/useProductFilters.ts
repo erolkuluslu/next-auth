@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useQueryState, parseAsString, parseAsFloat, parseAsInteger } from 'nuqs';
 import { useAppDispatch, useAppSelector } from '@/lib/store';
 import { selectFilters } from '@/lib/store/selectors';
@@ -9,6 +9,10 @@ import { updateFilters, SortOption } from '@/lib/store/slices/filtersSlice';
 export function useProductFilters() {
   const dispatch = useAppDispatch();
   const filters = useAppSelector(selectFilters);
+  
+  // Track initialization and prevent loops
+  const isInitializedRef = useRef(false);
+  const updateTimeoutRef = useRef<NodeJS.Timeout>();
 
   // URL State management
   const [categoryParam, setCategoryParam] = useQueryState('category', parseAsString);
@@ -18,54 +22,54 @@ export function useProductFilters() {
   const [maxPriceParam, setMaxPriceParam] = useQueryState('max_price', parseAsFloat);
   const [minRatingParam, setMinRatingParam] = useQueryState('min_rating', parseAsInteger);
 
-  // Sync URL params to Redux store on mount and when URL changes
+  // Single source of truth: URL params control Redux store
   useEffect(() => {
-    const urlFilters = {
-      category: categoryParam,
-      searchQuery: searchParam || '',
-      sortBy: (sortParam as SortOption) || 'newest',
-      priceRange: {
-        min: minPriceParam || 0,
-        max: maxPriceParam || 1000,
-      },
-      minRating: minRatingParam || 0,
-    };
-
-    // Only update if different from current filters
-    const hasChanges = 
-      urlFilters.category !== filters.category ||
-      urlFilters.searchQuery !== filters.searchQuery ||
-      urlFilters.sortBy !== filters.sortBy ||
-      urlFilters.priceRange.min !== filters.priceRange.min ||
-      urlFilters.priceRange.max !== filters.priceRange.max ||
-      urlFilters.minRating !== filters.minRating;
-
-    if (hasChanges) {
-      dispatch(updateFilters(urlFilters));
+    // Clear any pending updates
+    if (updateTimeoutRef.current) {
+      clearTimeout(updateTimeoutRef.current);
     }
+
+    // Debounce updates to prevent rapid-fire dispatches
+    updateTimeoutRef.current = setTimeout(() => {
+      try {
+        const urlFilters = {
+          category: categoryParam,
+          searchQuery: searchParam || '',
+          sortBy: (sortParam as SortOption) || 'newest',
+          priceRange: {
+            min: minPriceParam || 0,
+            max: maxPriceParam || 1000,
+          },
+          minRating: minRatingParam || 0,
+        };
+
+        // Only update if different from current filters or on first load
+        const hasChanges = !isInitializedRef.current ||
+          urlFilters.category !== filters.category ||
+          urlFilters.searchQuery !== filters.searchQuery ||
+          urlFilters.sortBy !== filters.sortBy ||
+          urlFilters.priceRange.min !== filters.priceRange.min ||
+          urlFilters.priceRange.max !== filters.priceRange.max ||
+          urlFilters.minRating !== filters.minRating;
+
+        if (hasChanges) {
+          dispatch(updateFilters(urlFilters));
+          isInitializedRef.current = true;
+        }
+      } catch (error) {
+        console.error('Error updating filters:', error);
+      }
+    }, 100);
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+    };
   }, [categoryParam, searchParam, sortParam, minPriceParam, maxPriceParam, minRatingParam, dispatch]);
 
-  // Sync Redux store to URL params when filters change
-  useEffect(() => {
-    if (filters.category !== categoryParam) {
-      setCategoryParam(filters.category);
-    }
-    if (filters.searchQuery !== searchParam) {
-      setSearchParam(filters.searchQuery || null);
-    }
-    if (filters.sortBy !== sortParam) {
-      setSortParam(filters.sortBy);
-    }
-    if (filters.priceRange.min !== minPriceParam) {
-      setMinPriceParam(filters.priceRange.min || null);
-    }
-    if (filters.priceRange.max !== maxPriceParam) {
-      setMaxPriceParam(filters.priceRange.max || null);
-    }
-    if (filters.minRating !== minRatingParam) {
-      setMinRatingParam(filters.minRating || null);
-    }
-  }, [filters]);
+  // Remove the second useEffect that was causing the loop
 
   // Helper functions
   const updateCategory = useCallback((category: string | null) => {
